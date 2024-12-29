@@ -1,0 +1,16 @@
+# Dependency directories
+node_modules/
+
+# Environment files except .env
+.env.example
+
+# Git files
+.git
+.gitignore
+
+# Logs
+*.log
+
+# Editor directories
+.vscode/
+.idea/
