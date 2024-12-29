@@ -1,10 +1,12 @@
+import type { Message } from 'discord.js';
+import { handleWebhookError } from './errorHandler';
 /**
  * 
  * @param {*} message 
  */
-export const checkChat = async (message, clientId) => {
+export const checkChat = async (message: Message, clientId: string) => {
   const channelId = message.channel.id;
-  const WEBHOOK_URL_CHAT_CHECK = process.env.WEBHOOK_URL_CHAT_CHECK;
+  const WEBHOOK_URL_CHAT_CHECK = process.env.WEBHOOK_URL_CHAT_CHECK ?? 'NO_URL';
   try {
     const response = await fetch(WEBHOOK_URL_CHAT_CHECK, {
       method: 'POST',
@@ -23,7 +25,8 @@ export const checkChat = async (message, clientId) => {
     console.debug('Chat check response:', responseData);
     return responseData['shouldAnswer'] ?? false;
   } catch (error) {
-    handleWebhookError(error, message);
+    if (error instanceof Error) handleWebhookError(error, message);
+    else console.error('Error processing chat check:', error);
     return false;
   }
 }

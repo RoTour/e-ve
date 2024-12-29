@@ -1,0 +1,12 @@
+services:
+  eve-discord:
+    image: rotour/eve-discord:latest-amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+      tags:
+        - rotour/eve-discord:latest-amd64
+    platform: linux/arm64
+    container_name: eve-discord
+    env_file:
+      - .env

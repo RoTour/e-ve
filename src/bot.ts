@@ -7,7 +7,7 @@ import { respond } from './response.js';
 dotenv.config();
 
 // Session management utilities
-export const getSessionId = (userId, channelId) => {
+export const getSessionId = (userId: string, channelId: string) => {
   const now = new Date();
   // Format: userId_channelId_YYYY-MM-DD
   return `${userId}_${channelId}_${now.toISOString().split('T')[0]}`;
@@ -16,7 +16,7 @@ export const getSessionId = (userId, channelId) => {
   // const timeWindow = Math.floor(now.getHours() / 6);
   // return `${userId}_${channelId}_${now.toISOString().split('T')[0]}_${timeWindow}`;
 };
-g
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -36,13 +36,13 @@ client.on(Events.MessageCreate, async (message) => {
 
   // Replace mentions with the user's name
   message.content = message.content.replace(/<@!?\d+>/g, (match) => {
-    const userId = match.match(/\d+/)[0];
-    const user = message.guild.members.cache.get(userId);
+    const userId = match?.match(/\d+/)?.[0] ?? '';
+    const user = message?.guild?.members.cache.get(userId);
     return user ? `@${user.displayName}` : match
   });
 
   // Check if bot should answer
-  const shouldAnswer = await checkChat(message, client.user.id);
+  const shouldAnswer = await checkChat(message, client.user?.id ?? "");
   if (!shouldAnswer) return;
   await respond(message);
 });

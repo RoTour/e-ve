@@ -1,9 +1,11 @@
+import type { Message } from 'discord.js';
 import { getSessionId } from './bot.js';
+import { handleWebhookError } from './errorHandler.js';
 
-export const respond = async (message) => {
-  await message.channel.sendTyping();
+export const respond = async (message: Message) => {
+  if ('sendTyping' in message.channel) await message.channel.sendTyping();
   const typingInterval = setInterval(async () => {
-    await message.channel.sendTyping();
+    if ('sendTyping' in message.channel) await message.channel.sendTyping();
   }, 10000);
 
   const sessionId = getSessionId(
@@ -20,7 +22,7 @@ export const respond = async (message) => {
       user: message.author.username,
     }
     console.debug("Sending message to webhook:", payload);
-    const webhookResponse = await fetch(process.env.WEBHOOK_URL, {
+    const webhookResponse = await fetch(process.env.WEBHOOK_URL ?? '', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -44,6 +46,7 @@ export const respond = async (message) => {
 
   } catch (error) {
     clearInterval(typingInterval);
-    handleWebhookError(error, message);
+    if (error instanceof Error) handleWebhookError(error, message);
+    else console.error('Error processing response:', error);
   }
 }
