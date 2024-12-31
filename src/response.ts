@@ -20,6 +20,7 @@ export const respond = async (message: Message) => {
       action: 'sendMessage',
       chatInput: message.content,
       user: message.author.username,
+      channelId: message.channel.id,
     }
     console.debug("Sending message to webhook:", payload);
     const webhookResponse = await fetch(process.env.WEBHOOK_URL ?? '', {
@@ -40,7 +41,7 @@ export const respond = async (message: Message) => {
     
     // Reply to the original message with the webhook response
     await message.reply({
-      content: responseData.output || 'Sorry, but you might wanna check the logs...',
+      content: responseData.output?.replaceAll('\\n', '\n') || 'Sorry, but you might wanna check the logs...',
       failIfNotExists: false,
     });
 
