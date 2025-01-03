@@ -3,13 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node src/bot.js",
-    "dev": "node src/bot.js",
+    "start": "bun src/bot.ts",
+    "dev": "bun src/bot.ts",
     "build": "bun build src/*.ts --compile --outfile=.bin/eve"
   },
   "dependencies": {
     "discord.js": "^14.14.1",
     "dotenv": "^16.3.1",
+    "jose": "^5.9.6",
     "node-fetch": "^3.3.2"
   },
   "module": "index.js",

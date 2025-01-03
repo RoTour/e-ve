@@ -1,6 +1,7 @@
 import type { Message } from 'discord.js';
 import { getSessionId } from './bot.js';
 import { handleWebhookError } from './errorHandler.js';
+import { createJwt } from './auth';
 
 export const respond = async (message: Message) => {
   if ('sendTyping' in message.channel) await message.channel.sendTyping();
@@ -14,6 +15,11 @@ export const respond = async (message: Message) => {
   );
 
   try {
+    const jwtToken = await createJwt(message.guild?.id ?? '');
+    console.debug("Created JWT token:", {
+      jwtToken,
+      guildId: message.guild?.id,
+    });
     // Send message content to webhook
     const payload = {
       sessionId,
@@ -21,6 +27,7 @@ export const respond = async (message: Message) => {
       chatInput: message.content,
       user: message.author.username,
       channelId: message.channel.id,
+      jwtToken,
     }
     console.debug("Sending message to webhook:", payload);
     const webhookResponse = await fetch(process.env.WEBHOOK_URL ?? '', {
@@ -41,7 +48,7 @@ export const respond = async (message: Message) => {
     
     // Reply to the original message with the webhook response
     await message.reply({
-      content: responseData.output?.replaceAll('\\n', '\n') || 'Sorry, but you might wanna check the logs...',
+      content: responseData.output?.replaceAll('\\n', '\n')?.replaceAll('\n\n', '\n') || 'Sorry, but you might wanna check the logs...',
       failIfNotExists: false,
     });
 
